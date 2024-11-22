@@ -26,7 +26,7 @@ class Test {
         // Tokenization ---------------------------
 
         t("1 + 10", "1 + 10");  // Arguments are input and expected output
-        /*
+        
         t("1+ 10", "1 + 10");   // Expected is in fact a list [ "1", "+", "10"]
         t("1 +10", "1 + 10");
         t("1+10", "1 + 10");
@@ -118,7 +118,7 @@ class Test {
         } catch (IllegalArgumentException e) {
             out.println(e.getMessage().equals(Calculator.MISSING_OPERATOR));
         }
-*/
+
     }
 
 
@@ -128,7 +128,9 @@ class Test {
     void t(String expr, String expected) {
         List<String> list = calculator.tokenize(expr);
         String result = String.join(" ", list);
-        out.println(result.equals(expected));
+        if(!result.equals(expected)){
+            out.println("result: " + result + " expected: " + expected);
+        }
     }
 
     // Infix 2 postfix
@@ -136,7 +138,9 @@ class Test {
         List<String> tokens = calculator.tokenize(infix);
         List<String> postfix = calculator.infix2Postfix(tokens);
         String result = String.join(" ", postfix);
-        out.println(result.equals(expected));
+        if(!result.equals(expected)){
+            out.println("result: " + result + " expected: " + expected);
+        }
     }
 
     // Evaluation
@@ -144,7 +148,9 @@ class Test {
         List<String> tokens = calculator.tokenize(infix);
         List<String> postfix = calculator.infix2Postfix(tokens);
         double result = calculator.evalPostfix(postfix);
-        out.println(result == expected);
+        if(result != expected){
+            out.println(" result: " + result + " expected: " + expected);
+        }
     }
 
 }

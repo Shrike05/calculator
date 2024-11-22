@@ -77,7 +77,11 @@ public class Calculator {
 
     // ------- Infix 2 Postfix ------------------------
     boolean isOp(String c){
-        return c.equals("+") || c.equals("-") || c.equals("*") || c.equals("/") || c.equals("^");
+        return c.equals("+") || 
+            c.equals("-") || 
+            c.equals("*") || 
+            c.equals("/") || 
+            c.equals("^");
     }
     
     List<String> infix2Postfix(List<String> infix) {
@@ -96,6 +100,9 @@ public class Calculator {
 
             else if(token.equals(")")){
                 //Keep adding values from the stack until the parenthesis closes
+                if(stack.isEmpty()){
+                    throw new IllegalArgumentException(MISSING_OPERATOR);
+                }
                 while(!stack.peek().equals("(")){
                     result.add(stack.pop());
                 }
@@ -104,13 +111,14 @@ public class Calculator {
             }
             //Is an operator
             else if(isOp(token)){
-                while(  !stack.isEmpty() && //The stack is not empty
+                while(!stack.isEmpty() && //The stack is not empty
                         isOp(stack.peek()) && //The element on top of the stack is an operator
-                        getPrecedence(token) <= getPrecedence(stack.peek())//If the stack operator has less than or equal precedence
+                        getPrecedence(stack.peek()) > getPrecedence(token)//If the stack operator has less than or equal precedence
+                        || (getPrecedence(stack.peek()) == getPrecedence(token) && getAssociativity(token) == Assoc.RIGHT)
                     ){
                     result.add(stack.pop());
                 }
-                //Add the operator to the stack afterwards
+                //Add the operator to the stack after taking out lower precedence ops
                 stack.add(token);
             }
         }

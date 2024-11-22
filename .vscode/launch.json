@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "Test",
+            "projectName": "calculator_f72623ec"
+        },
+        {
+            "type": "java",
+            "name": "REPL",
+            "request": "launch",
+            "mainClass": "REPL",
+            "projectName": "calculator_f72623ec"
+        },
+        {
+            "type": "java",
+            "name": "WebCalcServer",
+            "request": "launch",
+            "mainClass": "WebCalcServer",
+            "projectName": "calculator_f72623ec"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
