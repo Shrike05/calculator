@@ -91,6 +91,10 @@ public class Calculator {
         List<String> result = new ArrayList<String>();
         Stack<String> stack = new Stack<String>();
 
+        if(!has_enough_ops(infix)){
+            throw new IllegalArgumentException(MISSING_OPERATOR); 
+        }
+
         for(String token : infix){
             //If the token is a number then just add it to the result
             if(Character.isDigit(token.charAt(0))){
@@ -110,7 +114,7 @@ public class Calculator {
                 if(stack.isEmpty()){
                     throw new IllegalArgumentException(MISSING_OPERATOR);
                 }
-                
+
                 stack.pop(); // Remove '(' from stack
             }
             
@@ -137,6 +141,20 @@ public class Calculator {
         }
 
         return result;
+    }
+
+    boolean has_enough_ops(List<String> infix){
+        int operands = 0;
+        int operators = 0;
+        for(String i : infix){
+            if(isOp(i)){
+                operators++;
+            }else if( Character.isDigit(i.charAt(0)) ){
+                operands++;
+            }
+        }
+
+        return operands-1 <= operators;
     }
 
     int getPrecedence(String op) {
