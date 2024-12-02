@@ -45,6 +45,9 @@ public class Calculator {
             }
 
             else if (isOp(token)){
+                if(stack.size() < 2){
+                    throw new IllegalArgumentException(MISSING_OPERAND);
+                }
                 double a = stack.pop();
                 double b = stack.pop();
 
@@ -94,37 +97,42 @@ public class Calculator {
                 result.add(token);
             }
 
+            //Opening Bracket
             else if(token.equals("(")){
                 stack.add(token);
             }
-
+            //Closing Bracket
             else if(token.equals(")")){
-                //Keep adding values from the stack until the parenthesis closes
+                while (!stack.isEmpty() && !stack.peek().equals("(")) {
+                    result.add(stack.pop());
+                }
+
                 if(stack.isEmpty()){
                     throw new IllegalArgumentException(MISSING_OPERATOR);
                 }
-                while(!stack.peek().equals("(")){
-                    result.add(stack.pop());
-                }
-                //Remove the '(' at the end
-                stack.pop();
+                
+                stack.pop(); // Remove '(' from stack
             }
+            
             //Is an operator
-            else if(isOp(token)){
-                while(!stack.isEmpty() && //The stack is not empty
-                        isOp(stack.peek()) && //The element on top of the stack is an operator
-                        getPrecedence(stack.peek()) > getPrecedence(token)//If the stack operator has less than or equal precedence
-                        || (getPrecedence(stack.peek()) == getPrecedence(token) && getAssociativity(token) == Assoc.RIGHT)
-                    ){
+            else{
+                while(
+                    !stack.isEmpty() &&
+                    !stack.peek().equals("(") &&
+                    getPrecedence(token) <= getPrecedence(stack.peek()) &&
+                    getAssociativity(token) == Assoc.LEFT
+                ){
                     result.add(stack.pop());
                 }
-                //Add the operator to the stack after taking out lower precedence ops
                 stack.add(token);
             }
         }
 
         //Remove all the remaining operators from the stack
         while(!stack.isEmpty()){
+            if(stack.peek().equals("(")){
+                throw new IllegalArgumentException(MISSING_OPERATOR);
+            }
             result.add(stack.pop());
         }
 
@@ -138,6 +146,8 @@ public class Calculator {
             return 3;
         } else if ("^".contains(op)) {
             return 4;
+        } else if ("()".contains(op)) {
+            return -1;
         } else {
             throw new RuntimeException(OP_NOT_FOUND);
         }
@@ -191,7 +201,7 @@ public class Calculator {
             }
 
             //If the character is any of these symbols then add em'
-            if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
+            if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c == '^') {
                 result.add(String.valueOf(c));
             }
         }

@@ -17,16 +17,13 @@ class Test {
     final Calculator calculator = new Calculator();
 
     void test() {
-
         // Here you also could write your own test for any "small" helper methods
-
 
         // Uncomment line by line to test
 
         // Tokenization ---------------------------
 
         t("1 + 10", "1 + 10");  // Arguments are input and expected output
-        
         t("1+ 10", "1 + 10");   // Expected is in fact a list [ "1", "+", "10"]
         t("1 +10", "1 + 10");
         t("1+10", "1 + 10");
@@ -118,9 +115,7 @@ class Test {
         } catch (IllegalArgumentException e) {
             out.println(e.getMessage().equals(Calculator.MISSING_OPERATOR));
         }
-
     }
-
 
     // ------- Below are helper methods for testing NOTHING to do here -------------------
 
@@ -148,9 +143,5 @@ class Test {
         List<String> tokens = calculator.tokenize(infix);
         List<String> postfix = calculator.infix2Postfix(tokens);
         double result = calculator.evalPostfix(postfix);
-        if(result != expected){
-            out.println(" result: " + result + " expected: " + expected);
-        }
     }
-
 }
