@@ -39,26 +39,36 @@ public class Calculator {
     double evalPostfix(List<String> postfix) {
         Stack<Double> stack = new Stack<Double>();
 
+        //For every token in our expression
         for (String token : postfix){
+            //If the character is a number then parse it and add it to the stack
+            //It is going to be used later
             if(Character.isDigit(token.charAt(0))){
                 stack.add(Double.parseDouble(token));
             }
 
+            //If the character is an operator then take two numbers out from the stack and use the operator on them
             else if (isOp(token)){
+                //If there are less than two numbers in the stack then throw an error
                 if(stack.size() < 2){
                     throw new IllegalArgumentException(MISSING_OPERAND);
                 }
+
+                //Take out two numbers a and b
                 double a = stack.pop();
                 double b = stack.pop();
 
+                //Apply the operator to get our result
                 double res = applyOperator(token, a, b);
                 stack.add(res);
             }
         }
 
+        //Return the last element left in our stack after everything is done
         return stack.pop();
     }
 
+    //Apply the operators
     double applyOperator(String op, double d1, double d2) {
         switch (op) {
             case "+":
@@ -91,9 +101,7 @@ public class Calculator {
         List<String> result = new ArrayList<String>();
         Stack<String> stack = new Stack<String>();
 
-        if(!has_enough_ops(infix)){
-            throw new IllegalArgumentException(MISSING_OPERATOR); 
-        }
+        has_enough_ops(infix);
 
         for(String token : infix){
             //If the token is a number then just add it to the result
@@ -101,16 +109,18 @@ public class Calculator {
                 result.add(token);
             }
 
-            //Opening Bracket
+            //Add Opening Brackets to the stack
             else if(token.equals("(")){
                 stack.add(token);
             }
-            //Closing Bracket
+            //When you find a Closing Bracket then add everything to the result until the bracket closes
             else if(token.equals(")")){
                 while (!stack.isEmpty() && !stack.peek().equals("(")) {
                     result.add(stack.pop());
                 }
 
+                //If the entire stack gets emptied it means we didn't find a closing bracket
+                //Throw a missing operator error
                 if(stack.isEmpty()){
                     throw new IllegalArgumentException(MISSING_OPERATOR);
                 }
@@ -118,22 +128,28 @@ public class Calculator {
                 stack.pop(); // Remove '(' from stack
             }
             
-            //Is an operator
-            else{
+            //If the token is an operator
+            //Remove any higher/equal precedence tokens on the stack before you add it
+            //Unless it's right associative like ^
+            else if(isOp(token)){
                 while(
-                    !stack.isEmpty() &&
-                    !stack.peek().equals("(") &&
-                    getPrecedence(token) <= getPrecedence(stack.peek()) &&
-                    getAssociativity(token) == Assoc.LEFT
+                    !stack.isEmpty() && //Make sure the stack is not empty
+                    !stack.peek().equals("(") && //If it's a bracket then stop
+                    getPrecedence(token) <= getPrecedence(stack.peek()) && // The operator on the stack has higher/equal precedence
+                    getAssociativity(token) == Assoc.LEFT //Only when it's left associative a.k.a not a ^
                 ){
+                    //Add the higher/equal precedence operator to the result
                     result.add(stack.pop());
                 }
+                //Add the current operator to the stack
                 stack.add(token);
             }
         }
 
-        //Remove all the remaining operators from the stack
+        //Remove all the remaining operators from the stack to the result
         while(!stack.isEmpty()){
+            //all ( should have already been closed before we get here
+            //So we throw an error if we encounter one
             if(stack.peek().equals("(")){
                 throw new IllegalArgumentException(MISSING_OPERATOR);
             }
@@ -143,6 +159,8 @@ public class Calculator {
         return result;
     }
 
+    //Check if the expression has enough operands for its operators
+    // for example 2 + 3 * 6, there is always one less 
     boolean has_enough_ops(List<String> infix){
         int operands = 0;
         int operators = 0;
@@ -154,7 +172,13 @@ public class Calculator {
             }
         }
 
-        return operands-1 <= operators;
+        if(operands-1 < operators){
+            throw new IllegalArgumentException(MISSING_OPERAND);
+        }else if(operands-1 > operators){
+            throw new IllegalArgumentException(MISSING_OPERATOR);
+        }
+
+        return operands-1 == operators;
     }
 
     int getPrecedence(String op) {
